@@ -52,7 +52,7 @@ completely different order than round-primitive rewrites -- see
   as `*-naive`, OR'd instead of XOR'd -- valid because those terms are pairwise-disjoint
   / never-exactly-two-1), each proven algebraically equivalent to the FIPS textbook form
   in a doc-comment and re-checked exhaustively (all single-bit truth-table rows +
-  randomized 32-bit words) in `test/sha256d/ops_test.cljc`. The `:schedule` gene is an
+  randomized 32-bit words) in `test/sha256d/ops_test.cljk`. The `:schedule` gene is an
   implementation-strategy axis rather than a per-bit formula (`:precompute`, `:rolling`,
   `:precompute-transient`, JVM-only `:mutable` and `:primitive`, and cljs-only `:v8`).
 - **`sha256d.midstate`** -- Bitcoin block-header mining: cache the compression state after a
@@ -121,7 +121,7 @@ genuinely needs care is the padding's 64-bit big-endian length field: JS bitwise
 operators are 32-bit only and silently mask any shift count to its low 5 bits (`x >>>
 40` behaves as `x >>> 8`), so it's built from two 32-bit halves via `quot`/`mod` rather
 than shifting past bit 31 -- see `sha256d.core/u64be-bytes` and its doc-comment for the
-bug this repo actually hit and fixed (`test/sha256d/cljs_verify.cljs`, run under node,
+bug this repo actually hit and fixed (`test/sha256d/cljs_verify.cljk`, run under node,
 is what caught it -- the JVM test suite alone did not, since `unsigned-bit-shift-right`
 on a `long` is 64-bit-aware and masked the bug).
 
