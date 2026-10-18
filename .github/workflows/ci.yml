@@ -44,6 +44,38 @@ jobs:
       - name: Run tests
         run: clojure -M:test
 
+      - name: Lint (clj-kondo)
+        run: |
+          mkdir -p target/clj-kondo
+          while IFS= read -r -d '' source; do
+            lint_file="target/clj-kondo/${source%.*}.clj"
+            mkdir -p "$(dirname "$lint_file")"
+            cp "$source" "$lint_file"
+          done < <(find src test -type f -name '*.cljk' -print0)
+          clojure -M:lint --lint target/clj-kondo --fail-level error
+
+      - name: Compile Kotoba round primitives
+        run: |
+          mkdir -p target/kotoba
+          clojure -M:kotoba compile test/sha256d/round_primitives_conformance.kotoba \
+            --source-path src --target js-browser --output target/kotoba/round.mjs
+          clojure -M:kotoba compile test/sha256d/round_primitives_conformance.kotoba \
+            --source-path src --target wasm32-browser --output target/kotoba/round.wasm
+
+      - name: Execute Kotoba Web and Wasm signed-i64 matrix
+        run: |
+          amu_src="$(clojure -Spath -M:kotoba | tr ':' '\n' | grep '/io.github.kotoba-lang/amu/' | head -1)"
+          amu_root=""
+          for candidate in "$amu_src" "$(dirname "$amu_src")"; do
+            if [[ -f "$candidate/runtime/browser-host.mjs" ]]; then
+              amu_root="$candidate"
+              break
+            fi
+          done
+          test -n "$amu_root"
+          node scripts/verify-kotoba-round-primitives.mjs target/kotoba/round.mjs \
+            target/kotoba/round.wasm "$amu_root/runtime/browser-host.mjs"
+
   cljs-portability:
     name: cljs portability proof (node)
     runs-on: ubuntu-latest
