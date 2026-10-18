@@ -14,4 +14,5 @@
   "test/sha256d/evolve_test.cljk" ".cljc"
   "test/sha256d/midstate_test.cljk" ".cljc"
   "test/sha256d/mitm_test.cljk" ".cljc"
-  "test/sha256d/ops_test.cljk" ".cljc"}}
+  "test/sha256d/ops_test.cljk" ".cljc"
+  "test/sha256d/round_primitives_matrix_test.cljk" ".clj"}}

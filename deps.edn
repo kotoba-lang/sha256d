@@ -1,8 +1,9 @@
-;; sha256d-clj -- portable .cljc SHA-256 / Bitcoin SHA-256d reference implementation,
+;; sha256d -- portable .cljc SHA-256 / Bitcoin SHA-256d reference implementation,
 ;; plus an interchangeable "gene pool" of proven-equivalent round-primitive
 ;; formulations and a self-contained evolutionary benchmark tournament over them.
-;; Zero third-party deps for the core; JVM Clojure + ClojureScript both run the same
-;; .cljc source (see README.md "Portability").
+;; First-party kotoba-lang deps: kotoba.prng is the deterministic PRNG that
+;; replaces java.util.Random (src/mitm.cljc run-mitm, test/core_test.cljc).
+;; Zero THIRD-party deps remains true; prng is kotoba-lang's own portable lib.
 {:paths ["src"]
  :deps {
         ;; kotoba.lang.coll replaced clojure.set here (2026-09-24). An explicit
@@ -18,7 +19,9 @@
         ;; tools.deps takes the NEWEST sha it is shown, so without a floor here
         ;; this repo silently rides whatever a sibling happens to name.
         io.github.kotoba-lang/text {:git/sha "73bdb13ae7a3d004b44bca08be03a3191157a38f"}
-       }
+       io.github.kotoba-lang/prng
+        {:git/url "https://github.com/kotoba-lang/prng.git"
+         :git/sha "f1153489b12f24018f3f789d7b654e97aae58867"}}
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
@@ -42,4 +45,12 @@
                :extra-deps {org.clojure/clojurescript {:mvn/version "1.11.132"}}
                :main-opts ["-m" "cljs.main"
                            "-co" "{:optimizations :simple :target :nodejs :main sha256d.cljs-bench :output-to \"target/cljs-bench.js\"}"
-                           "-c" "sha256d.cljs-bench"]}}}
+                           "-c" "sha256d.cljs-bench"]}
+  ;; clj-kondo as a Clojars lib (no Homebrew/system install needed).
+  :lint {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2024.11.14"}}
+         :main-opts ["-m" "clj-kondo.main" "--lint" "src" "test"
+                     "--fail-level" "error"]}
+  :kotoba {:replace-deps {io.github.kotoba-lang/amu
+                          {:git/url "https://github.com/kotoba-lang/amu.git"
+                           :git/sha "78f43e64125e9c4bbe2bfb3a9520ae4b767dc275"}}
+           :main-opts ["-m" "kotoba.compiler.cli"]}}}

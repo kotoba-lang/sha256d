@@ -1,4 +1,10 @@
-# sha256d-clj
+# sha256d
+
+The dependency-free SHA-256 `Ch` and `Maj` round primitives also have a native
+`.kotoba` implementation in `sha256d.round-primitives`. Its domain is every
+signed i64 bit pattern and it compiles directly to restricted JavaScript and
+Wasm without a JVM runtime. Message scheduling, compression, complete digests,
+benchmark evolution, and platform-specific fast paths remain in `.cljc`.
 
 A portable **`.cljc` SHA-256 / Bitcoin SHA-256d** reference implementation, plus a
 small **evolutionary benchmark tournament** over interchangeable, individually-proven
@@ -124,6 +130,12 @@ than shifting past bit 31 -- see `sha256d.core/u64be-bytes` and its doc-comment 
 bug this repo actually hit and fixed (`test/sha256d/cljs_verify.cljk`, run under node,
 is what caught it -- the JVM test suite alone did not, since `unsigned-bit-shift-right`
 on a `long` is 64-bit-aware and masked the bug).
+
+The two JVM-only RNG uses (`src/sha256d/mitm.cljk` `run-mitm` and the JVM test's
+2-way `compress` equivalence) used to hold `java.util.Random`; they now use
+**`kotoba-lang/prng`** (`kotoba.prng`), a kotoba-lang first-party deterministic
+PRNG with JVM/ClojureScript bit-parity. The core stays zero THIRD-party deps;
+`prng` is kotoba-lang's own portable lib.
 
 ## Status / follow-ups
 
