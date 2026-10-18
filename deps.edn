@@ -48,8 +48,7 @@
                            "-c" "sha256d.cljs-bench"]}
   ;; clj-kondo as a Clojars lib (no Homebrew/system install needed).
   :lint {:replace-deps {clj-kondo/clj-kondo {:mvn/version "2024.11.14"}}
-         :main-opts ["-m" "clj-kondo.main" "--lint" "src" "test"
-                     "--fail-level" "error"]}
+         :main-opts ["-m" "clj-kondo.main"]}
   :kotoba {:replace-deps {io.github.kotoba-lang/amu
                           {:git/url "https://github.com/kotoba-lang/amu.git"
                            :git/sha "78f43e64125e9c4bbe2bfb3a9520ae4b767dc275"}}

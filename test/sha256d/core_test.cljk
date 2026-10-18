@@ -94,8 +94,12 @@
                  [w7 seed7] (prng/word-32 seed6)
                  [w8 seed8] (prng/word-32 seed7)
                  s1 [w1 w2 w3 w4 w5 w6 w7 w8]
-                 b1 (vec (for [_ (range 64)] (first (prng/next-int seed8 256))))
-                 [x1 seed9]  (prng/word-32 seed8)
+                 [b1 seed8b] (loop [i 0 state seed8 bytes []]
+                               (if (= i 64)
+                                 [bytes state]
+                                 (let [[byte next-state] (prng/next-int state 256)]
+                                   (recur (inc i) next-state (conj bytes byte)))))
+                 [x1 seed9]  (prng/word-32 seed8b)
                  [x2 seed10] (prng/word-32 seed9)
                  [x3 seed11] (prng/word-32 seed10)
                  [x4 seed12] (prng/word-32 seed11)
@@ -104,8 +108,12 @@
                  [x7 seed15] (prng/word-32 seed14)
                  [x8 seed16] (prng/word-32 seed15)
                  s2 [x1 x2 x3 x4 x5 x6 x7 x8]
-                 b2 (vec (for [_ (range 64)] (first (prng/next-int seed16 256))))
+                 [b2 seed16b] (loop [i 0 state seed16 bytes []]
+                                (if (= i 64)
+                                  [bytes state]
+                                  (let [[byte next-state] (prng/next-int state 256)]
+                                    (recur (inc i) next-state (conj bytes byte)))))
                  [o1 o2] (core/compress-primitive-2way s1 b1 s2 b2)]
              (is (= (core/compress-primitive-inline s1 b1) o1))
              (is (= (core/compress-primitive-inline s2 b2) o2))
-             (recur seed16 (inc i))))))))
+             (recur seed16b (inc i))))))))
